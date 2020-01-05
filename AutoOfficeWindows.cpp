@@ -30,8 +30,12 @@
 //  how Windows works.  Running the program with runas.exe can be used to promote it to admin
 //  and only enter the admin password once.  For example:
 //
-//    %windir%\System32\runas.exe /savecred /user:administrator C:\JoesSource\Projects\AutoOfficeWindows\Debug\AutoOfficeWindows.exe
-// 
+//  %windir%\System32\runas.exe /savecred /user:administrator C:\JoesSource\Projects\AutoOfficeWindows\Debug\AutoOfficeWindows.exe
+//
+// Note that this first requires initializing the administrator account, as decsribed here:
+//  
+//
+//
 // When debugging VS must also be run as admin (RMB, choose Run As Administrator).
 //
 
