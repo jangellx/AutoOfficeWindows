@@ -181,6 +181,8 @@ int __cdecl wmain(
 
 		if (retCode != NO_ERROR) {
 			wprintf(L"HttpAddUrl failed with %lu \n", retCode);
+			if( retCode == 1214 )
+				wprintf(L"- Invalid net name.  Local IP must exactly match the one in the app (currently 192.168.1.233)\n");
 			goto CleanUp;
 
 		} else {
@@ -219,9 +221,9 @@ int __cdecl wmain(
 	return retCode;
 }
 
-// Utility to wak the display.  SC_MONITORPOWER with -1 should work, but seems to have broken since Windows 8.  MOving the mouse hacks around that.
+// Utility to wake the display.  SC_MONITORPOWER with -1 should work, but seems to have broken since Windows 8.  MOving the mouse hacks around that.
 void triggerWake(void) {
-	SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)-1);	// -1: on
+	SendNotifyMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)-1);	// -1: on
 	mouse_event( 0x01 /* MOUSEEVENT_MOVE */, 0, 1, 0, NULL );
 }
 
@@ -330,7 +332,7 @@ DWORD DoReceiveRequests(
 				else if (wcscmp(route, L"/sleep") == 0) {
 				 // Sleep the displays
 					wprintf(L"/sleep GET URL hit\n");
-					SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)2);		// 2: off
+					SendNotifyMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)2);		// 2: off
 					result = SendHttpResponse(hReqQueue, pRequest, 200, "Sleep", "{\"isAwake\":0}");
 					break;
 
@@ -400,7 +402,7 @@ DWORD DoReceiveRequests(
 				if (wcsstr((wchar_t *)pRequest->CookedUrl.pFullUrl, L"/do/wake") != NULL) {
 					// /do/sleep
 					wprintf(L"/do/sleep PUT URL hit\n");
-					SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)2);		// 2: off
+					SendNotifyMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)2);		// 2: off
 					result = SendHttpResponse(hReqQueue, pRequest, 200, "Sleep", "{\"isAwake\":0}");
 					break;
 				}
@@ -454,7 +456,7 @@ DWORD DoReceiveRequests(
 				if (strstr((char *)pEntityBuffer, "sleep") != NULL) {
 					// /do command:sleep
 					wprintf(L"/do command:sleep PUT URL hit\n");
-					SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)2);		// 2: off
+					SendNotifyMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)2);		// 2: off
 					result = SendHttpResponse(hReqQueue, pRequest, 200, "Sleep", "{\"isAwake\":0}");
 					break;
 				}
